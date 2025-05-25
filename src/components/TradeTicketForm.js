@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { generateTradeTicket } from '../utils/opra';
 
 const TradeTicketForm = () => {
@@ -6,16 +6,28 @@ const TradeTicketForm = () => {
   const [entry, setEntry] = useState('');
   const [target, setTarget] = useState('');
   const [stop, setStop] = useState('');
+  const [qty, setQty] = useState('');
   const [result, setResult] = useState('Trade details will appear here');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const ticket = generateTradeTicket(opra, entry, target, stop);
+    const ticket = generateTradeTicket(opra, entry, target, stop, qty);
     setResult(ticket);
   };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(result);
   };
+
+  const handleClear = () => {
+    setOpra('');
+    setEntry('');
+    setTarget('');
+    setStop('');
+    setQty('');
+    setResult('Trade details will appear here');
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full max-w-lg">
       <div>
@@ -26,6 +38,18 @@ const TradeTicketForm = () => {
           onChange={e => setOpra(e.target.value)}
           className="w-full p-3 border border-green-500 rounded bg-zinc-800 focus:outline-none"
           placeholder="Paste OPRA code here"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-semibold mb-1">Quantity</label>
+        <input
+          type="number"
+          min="1"
+          value={qty}
+          onChange={e => setQty(Number(e.target.value))}
+          className="w-full p-3 border border-green-500 rounded bg-zinc-800 focus:outline-none"
+          placeholder="Enter number of contracts"
           required
         />
       </div>
@@ -48,7 +72,7 @@ const TradeTicketForm = () => {
           step="0.01"
           value={target}
           onChange={e => setTarget(e.target.value)}
-          className="w-full p-3	border	border-green-500 rounded bg-zinc-800 focus:outline-none"
+          className="w-full p-3 border border-green-500 rounded bg-zinc-800 focus:outline-none"
           placeholder="Enter target price"
           required
         />
@@ -60,7 +84,7 @@ const TradeTicketForm = () => {
           step="0.01"
           value={stop}
           onChange={e => setStop(e.target.value)}
-          className="w-full p-3	border	border-green-500 rounded bg-zinc-800 focus:outline-none"
+          className="w-full p-3 border border-green-500 rounded bg-zinc-800 focus:outline-none"
           placeholder="Enter stop loss"
           required
         />
@@ -74,13 +98,22 @@ const TradeTicketForm = () => {
       <div className="mt-6 p-4 border border-green-500 rounded bg-zinc-800 whitespace-pre-wrap">
         {result}
       </div>
-      <button
+      <div className="flex gap-3 mt-1">
+        <button
           type="button"
           onClick={handleCopy}
-          className="self-start mt-1 py-3 px-4 bg-gray-700 text-white font-semibold rounded hover:bg-gray-600"
+          className="py-3 px-4 bg-gray-700 text-white font-semibold rounded hover:bg-gray-600"
         >
           Copy
         </button>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="py-3 px-4 bg-red-600 text-white font-semibold rounded hover:bg-red-500"
+        >
+          Clear
+        </button>
+      </div>
     </form>
   );
 };
